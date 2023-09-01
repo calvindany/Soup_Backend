@@ -34,11 +34,16 @@ namespace Soup_Backend.Controllers
                     cmd.Parameters.AddWithValue("description", category.Description);
                     cmd.Parameters.AddWithValue("image", category.Image);
 
-                    cmd.ExecuteNonQuery();
-
+                    int result = cmd.ExecuteNonQuery();
+               
                     conn.Close();
 
-                    return Ok("Operation Success");
+                    if(result > 0)
+                    {
+                        return Ok("Success Add Data");
+                    }
+
+                    return Ok("Nothing Happen");
                 }
             }
             catch (Exception ex)
@@ -67,11 +72,16 @@ namespace Soup_Backend.Controllers
                     cmd.Parameters.AddWithValue("description", category.Description);
                     cmd.Parameters.AddWithValue("image", category.Image);
 
-                    cmd.ExecuteNonQuery();
+                    int result = cmd.ExecuteNonQuery();
 
                     conn.Close();
 
-                    return Ok("Data Updated");
+                    if (result > 0)
+                    {
+                        return Ok("Success Add Data");
+                    }
+
+                    return Ok("Nothing Happen");
                 }
             }
             catch (Exception ex)
@@ -97,10 +107,16 @@ namespace Soup_Backend.Controllers
 
                     cmd.Parameters.AddWithValue("id_category", category_id);
 
-                    cmd.ExecuteNonQuery();
+                    int result = cmd.ExecuteNonQuery();
 
                     conn.Close();
-                    return Ok(query);
+
+                    if (result > 0)
+                    {
+                        return Ok("Success Add Data");
+                    }
+
+                    return Ok("Nothing Happen");
                 }
             }
             catch (Exception ex)
