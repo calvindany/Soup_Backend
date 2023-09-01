@@ -16,6 +16,24 @@ namespace Soup_Backend.Controllers
             _configuration = configuration;
         }
 
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetCategory()
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultString")))
+                {
+                    string query = "SELECT * FROM category";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    cmd.ExecuteNonQuery();
+
+                    return Ok()
+                }
+            }
+        }
 
         [HttpPost]
         [Route("PostCategory")]
