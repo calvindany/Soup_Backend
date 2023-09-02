@@ -22,16 +22,32 @@ namespace Soup_Backend.Controllers
         {
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultString")))
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
+                    conn.Open();
+                    List<Category> categories = new List<Category>();
                     string query = "SELECT * FROM category";
 
                     MySqlCommand cmd = new MySqlCommand(query, conn);
 
-                    cmd.ExecuteNonQuery();
-
-                    return Ok()
+                    using(MySqlDataReader  reader = cmd.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            categories.Add(new Category()
+                            {
+                                Title = reader.GetString("category_name"),
+                                Description = reader.GetString("description"),
+                                Image = reader.GetString("image")
+                            });
+                        } 
+                    }
+                    conn.Close();
+                    return Ok(categories);
                 }
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
             }
         }
 
