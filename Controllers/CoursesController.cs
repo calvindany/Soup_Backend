@@ -39,7 +39,7 @@ namespace Soup_Backend.Controllers
                                 Description = reader.GetString("description"),
                                 Price = reader.GetInt32("price"),
                                 Image = reader.GetString("image"),
-                                IdCategory = reader.GetInt32("idcategori")
+                                IdCategory = reader.GetInt32("idcategory")
                             });
                         }
                     }
@@ -74,6 +74,72 @@ namespace Soup_Backend.Controllers
             }
 
             return Ok("Success");
+        }
+
+        [HttpPost]
+        [Route("EditCourse/{course_id:int}")]
+
+        public IActionResult EditCourse([FromBody] Course course, int course_id)
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    conn.Open();
+
+                    string query = "UPDATE course SET title=@new_title, description=@new_description, price=@new_price, image=@new_image, idcategory=@new_idcategory";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    int result = cmd.ExecuteNonQuery();
+
+                    cmd.Parameters.AddWithValue("new_title", course.Title);
+                    cmd.Parameters.AddWithValue("new_description", course.Description);
+                    cmd.Parameters.AddWithValue("new_price", course.Price);
+                    cmd.Parameters.AddWithValue("new_image", course.Image);
+                    cmd.Parameters.AddWithValue("idcategory", course.IdCategory);
+
+                    if( result > 0)
+                    {
+                        return Ok("Data behasil diubah");
+                    }
+                }
+
+                return Ok("Nothing Happen");
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete]
+        [Route("DeleteCourse")]
+        public IActionResult DeleteCourse(int course_id)
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection"))) {
+                    conn.Open();
+                    string query = "DELETE FROM course WHERE id=@course_id";
+
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+
+                    cmd.Parameters.AddWithValue("course_id", course_id);
+
+                    int result = cmd.ExecuteNonQuery();
+
+                    conn.Close();
+                    if (result > 0)
+                    {
+                        return Ok("Course Deleted");
+                    }
+
+                    return Ok("Course Not Found");
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
         
     }
