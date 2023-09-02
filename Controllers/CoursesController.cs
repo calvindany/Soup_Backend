@@ -15,10 +15,43 @@ namespace Soup_Backend.Controllers
             _configuration = configuration;
         }
 
-        /*[Route("GetAllCourse")]*/
-        /*ublic IActionResult GetAllCourse() {
-            return null;
-        }*/
+
+        [HttpGet]
+        [Route("")]
+        public IActionResult GetAllCourse() {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    conn.Open();
+                    List<Course> courses = new List<Course>();
+
+                    string query = "SELECT * FROM course";
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                        
+                    using (MySqlDataReader reader = cmd.ExecuteReader())
+                    {
+                        while(reader.Read())
+                        {
+                            courses.Add(new Course()
+                            {
+                                Title = reader.GetString("title"),
+                                Description = reader.GetString("description"),
+                                Price = reader.GetInt32("price"),
+                                Image = reader.GetString("image"),
+                                IdCategory = reader.GetInt32("idcategori")
+                            });
+                        }
+                    }
+
+                    conn.Close();
+                    return Ok(courses);
+                } 
+            } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPost]
         [Route("PostCourse")]
