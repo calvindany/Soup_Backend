@@ -145,5 +145,44 @@ namespace Soup_Backend.Controllers
             }
             catch (Exception ex) { return BadRequest(ex.Message); }
         }
+
+        [HttpGet]
+        [Route("GetInvoice/{user_id:int}")]
+        public IActionResult GetInvoice(int user_id)
+        {
+            List<DisplayInvoiceData> invoice = new List<DisplayInvoiceData>();
+
+            using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+
+                string query = @"SELECT Invoice.noinvoice as NoInvoice, Invoice.date as Date, COUNT(*) as  FROM invoice 
+                                INNER JOIN checkout ON checkout.noinvoice=invoice.no_invoice
+                                WHERE checkout.fk_id_user=@userId";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+                cmd.Parameters.AddWithValue("userId", user_id);
+
+                cmd.ExecuteNonQuery();
+
+                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                foreach (DataRow dr in dt.Rows)
+                {
+
+                    invoice.Add(new DisplayInvoiceData()
+                    {
+                        NoInvoice = dr["NoInvoice"].ToString(),
+                        Date = dr["Date"].ToString(),
+
+                    });
+                }
+            }
+            return Ok();
+        }
     }
+
+
 }

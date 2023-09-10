@@ -31,4 +31,9 @@
             return invoiceId;
         }
     }
+
+    public int CountCoursePerInvoice()
+    {
+
+    }
 }
