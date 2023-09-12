@@ -156,9 +156,14 @@ namespace Soup_Backend.Controllers
             {
                 conn.Open();
 
-                string query = @"SELECT Invoice.noinvoice as NoInvoice, Invoice.date as Date, COUNT(*) as  FROM invoice 
-                                INNER JOIN checkout ON checkout.noinvoice=invoice.no_invoice
-                                WHERE checkout.fk_id_user=@userId";
+                string query = @"SELECT invoice.no_invoice as NoInvoice, invoice.date as InvoiceDates, COALESCE(totalcourse, 0) as TotalCourse, invoice.totalprice as TotalPrice FROM invoice 
+                                INNER JOIN (
+	                                SELECT no_invoice, COUNT(*) as totalcourse
+                                    FROM checkout
+                                    WHERE fk_id_user = @userId
+                                    GROUP BY no_invoice
+                                ) as checkout_counts
+                                ON checkout_counts.no_invoice = invoice.no_invoice;";
 
                 MySqlCommand cmd = new MySqlCommand(query, conn);
                 cmd.Parameters.AddWithValue("userId", user_id);
@@ -175,12 +180,13 @@ namespace Soup_Backend.Controllers
                     invoice.Add(new DisplayInvoiceData()
                     {
                         NoInvoice = dr["NoInvoice"].ToString(),
-                        Date = dr["Date"].ToString(),
-
+                        InvoiceDates = dr["InvoiceDates"].ToString(),
+                        TotalCourse = Convert.ToInt32(dr["TotalCourse"]),
+                        TotalPrice = Convert.ToInt32(dr["TotalPrice"])
                     });
                 }
             }
-            return Ok();
+            return Ok(invoice);
         }
     }
 
