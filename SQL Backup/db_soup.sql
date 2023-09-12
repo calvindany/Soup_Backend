@@ -107,8 +107,9 @@ DROP TABLE IF EXISTS `invoice`;
 /*!50503 SET character_set_client = utf8mb4 */;
 CREATE TABLE `invoice` (
   `id` int NOT NULL AUTO_INCREMENT,
-  `noinvoice` varchar(11) NOT NULL,
+  `no_invoice` varchar(11) NOT NULL,
   `date` datetime NOT NULL,
+  `totalprice` int DEFAULT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -119,7 +120,7 @@ CREATE TABLE `invoice` (
 
 LOCK TABLES `invoice` WRITE;
 /*!40000 ALTER TABLE `invoice` DISABLE KEYS */;
-INSERT INTO `invoice` VALUES (1,'DA001','2038-01-19 03:14:07'),(6,'SOUP1234','2023-09-08 16:08:15'),(7,'SOUP2345','2023-09-08 16:17:09');
+INSERT INTO `invoice` VALUES (1,'DA001','2038-01-19 03:14:07',500000),(6,'SOUP1234','2023-09-08 16:08:15',400000),(7,'SOUP2345','2023-09-08 16:17:09',100000);
 /*!40000 ALTER TABLE `invoice` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -132,4 +133,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-09-11  0:59:20
+-- Dump completed on 2023-09-13  0:35:15
