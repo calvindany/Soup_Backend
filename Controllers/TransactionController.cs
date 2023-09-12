@@ -188,6 +188,69 @@ namespace Soup_Backend.Controllers
             }
             return Ok(invoice);
         }
+
+        [HttpGet]
+        [Route("GetDetailInvoice/{invoice_id}")]
+        public IActionResult GetDetailInvoice(string invoice_id)
+        {
+            DisplayDetailInvoiceData displayDetailInvoiceData = new DisplayDetailInvoiceData();
+            List<InvoiceCourseList> courseList = new List<InvoiceCourseList>();
+            using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+
+                string queryGetInvoiceInformation = @"SELECT invoice.no_invoice AS NoInvoice, 
+                                                    invoice.date AS InvoiceDate, invoice.totalprice AS TotalPrice
+                                                    FROM invoice
+                                                    WHERE invoice.id = @invoiceId";
+                MySqlCommand cmd = new MySqlCommand(queryGetInvoiceInformation, conn);
+
+                cmd.Parameters.AddWithValue("invoiceId", invoice_id);
+                cmd.ExecuteNonQuery();
+
+                string queryGetRelatedCheckoutByNoInvoice = @"SELECT course.title AS CourseTitle, category.category_name AS CategoryName, 
+                                                                checkout.schedule AS ScheduledCourse, course.price AS CoursePrice
+                                                                FROM checkout
+                                                                INNER JOIN course ON checkout.fk_id_course = course.id
+                                                                INNER JOIN category ON course.idcategory = category.id
+                                                                WHERE checkout.no_invoice = @noInvoice";
+                MySqlCommand cmd2 = new MySqlCommand(queryGetRelatedCheckoutByNoInvoice, conn);
+                cmd2.Parameters.AddWithValue("noInvoice", invoice_id);
+                cmd2.ExecuteNonQuery();
+
+                // Input all data from queryGetRelatedCheckoutByNoInvoice to InvoiceCourseList
+                MySqlDataAdapter adapter = new MySqlDataAdapter(cmd2);
+                DataTable dt = new DataTable();
+                adapter.Fill(dt);
+
+                foreach (DataRow dr in dt.Rows)
+                {
+                    courseList.Add(new InvoiceCourseList()
+                    {
+                        CourseName = dr["CourseTitle"].ToString(),
+                        Category = dr["CategoryName"].ToString(),
+                        ScheduledCourse = dr["ScheduledCourse"].ToString(),
+                        CoursePrice = Convert.ToInt32(dr["CoursePrice"])
+                    });
+                }
+
+                using (MySqlDataReader reader = cmd.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        displayDetailInvoiceData.NoInvoice = reader.GetString("NoInvoice");
+                        displayDetailInvoiceData.InvoiceDate = reader.GetString("InvoiceDate");
+                        displayDetailInvoiceData.TotalPrice = reader.GetInt32("TotalPrice");
+                        displayDetailInvoiceData.InvoiceCourseLists = courseList;
+
+                    }
+                }
+
+                conn.Close();
+            }
+
+            return Ok(courseList);
+        }
     }
 
 
