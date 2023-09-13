@@ -7,5 +7,6 @@
         public DateTime? Date { get; set; }
         public DateTime? Schedule { get; set; }
         public List<int> CourseId { get; set; }
+        public int? TotalCoursePrice { get; set; }
     }
 }

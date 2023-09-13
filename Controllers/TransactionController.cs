@@ -113,11 +113,12 @@ namespace Soup_Backend.Controllers
                         try
                         {
                             string generateInvoiceId = transactionLogic.GenerateInvoiceId();
-                            string queryAddToInvoice = "INSERT INTO invoice (noinvoice, date) VALUES (@invoiceId, @date)";
+                            string queryAddToInvoice = "INSERT INTO invoice (no_invoice, date, totalprice) VALUES (@invoiceId, @date, @totalprice)";
 
                             MySqlCommand cmd = new MySqlCommand(queryAddToInvoice, conn, transaction);
                             cmd.Parameters.AddWithValue("invoiceId", generateInvoiceId);
                             cmd.Parameters.AddWithValue("date", DateTime.Now);
+                            cmd.Parameters.AddWithValue("totalprice", invoice.TotalCoursePrice);
 
                             cmd.ExecuteNonQuery();
 
