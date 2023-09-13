@@ -129,6 +129,7 @@ namespace Soup_Backend.Controllers
                                 MySqlCommand cmd2 = new MySqlCommand(queryEditCheckout, conn, transaction);
                                 cmd2.Parameters.AddWithValue("invoiceId", generateInvoiceId);
                                 cmd2.Parameters.AddWithValue("userId", invoice.UserId);
+
                                 cmd2.Parameters.AddWithValue("courseId", invoice.CourseId[i]);
                                 cmd2.ExecuteNonQuery();
                             }
