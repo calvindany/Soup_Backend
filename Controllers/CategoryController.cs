@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data;
 using MySql.Data.MySqlClient;
+using Soup_Backend.DTOs.ListMenuClass;
 using Soup_Backend.Models;
 
 namespace Soup_Backend.Controllers
@@ -46,6 +47,66 @@ namespace Soup_Backend.Controllers
                     return Ok(categories);
                 }
             } catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet]
+        [Route("GetCategoryById/{category_id:int}")]
+        public IActionResult GetCategoryById(int category_id)
+        {
+            try
+            {
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+                {
+                    conn.Open();
+                    DisplayListMenuClass displayListMenuClass = null;
+                    List<DisplayCoursesFromCategory> relatedCourse = new List<DisplayCoursesFromCategory>();
+
+                    string query = "SELECT * FROM category WHERE id=@categoryId";
+                    string query2 = "SELECT * FROM course WHERE idcategory=@categoryId";
+
+
+                    MySqlCommand cmdGetRelatedCourseInfo = new MySqlCommand(query2, conn);
+
+                    cmdGetRelatedCourseInfo.Parameters.AddWithValue("categoryId", category_id);
+
+                    using (MySqlDataReader reader = cmdGetRelatedCourseInfo.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            relatedCourse.Add(new DisplayCoursesFromCategory()
+                            {
+                                Title = reader.GetString("title"),
+                                Price = reader.GetInt32("price"),
+                                Image = reader.GetString("image"),
+                            });
+                        }
+                    }
+
+                    MySqlCommand cmdGetCategoryInfo = new MySqlCommand(query, conn);
+
+                    cmdGetCategoryInfo.Parameters.AddWithValue("categoryId", category_id);
+
+                    using (MySqlDataReader reader = cmdGetCategoryInfo.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            displayListMenuClass = new DisplayListMenuClass() {
+                                Category_Name = reader.GetString("category_name"),
+                                Description = reader.GetString("description"),
+                                Image = reader.GetString("image"),
+                                RelatedCourse = relatedCourse,
+                            };
+                        }
+
+                    }
+                    conn.Close();
+                    return Ok(displayListMenuClass);
+                }
+            }
+            catch (Exception ex)
             {
                 return BadRequest(ex.Message);
             }
