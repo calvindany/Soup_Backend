@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Soup_Backend.DTOs.DetailClass;
 using Soup_Backend.Models;
 
 namespace Soup_Backend.Controllers
@@ -51,6 +52,24 @@ namespace Soup_Backend.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        [HttpGet]
+        [Route("GetCourseById/{course_id:int}")]
+        public IActionResult GetCourseById(int course_id) {
+            DisplayDetailClass displayDetailClass = null;
+            List<DisplayOtherCourse> displayOtherCourses = new List<DisplayOtherCourse>();
+
+            using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string query = "SELECT * FROM course WHERE course.id=@idCourse";
+                string query = "SELECT * FROM course WHERE course.id=@idCourse";
+
+                MySqlCommand cmd = new MySqlCommand(query, conn);
+
+            }
+            return null;
         }
 
         [HttpPost]
