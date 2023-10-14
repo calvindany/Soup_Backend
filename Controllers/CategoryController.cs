@@ -37,6 +37,7 @@ namespace Soup_Backend.Controllers
                         {
                             categories.Add(new Category()
                             {
+                                Id = reader.GetInt32("id"),
                                 Title = reader.GetString("category_name"),
                                 Description = reader.GetString("description"),
                                 Image = reader.GetString("image")
@@ -78,6 +79,7 @@ namespace Soup_Backend.Controllers
                         {
                             relatedCourse.Add(new DisplayCoursesFromCategory()
                             {
+                                Id = reader.GetInt32("id"),
                                 Title = reader.GetString("title"),
                                 Price = reader.GetInt32("price"),
                                 Image = reader.GetString("image"),
