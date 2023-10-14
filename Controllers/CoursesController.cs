@@ -1,6 +1,10 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Soup_Backend.DTOs.DetailClass;
 using Soup_Backend.Models;
+using System.Data;
+using System.Diagnostics.Eventing.Reader;
+using System.Xml;
 
 namespace Soup_Backend.Controllers
 {   
@@ -51,6 +55,66 @@ namespace Soup_Backend.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }
+
+        // This for Detail Course Page API
+        [HttpGet]
+        [Route("GetCourseById/{course_id:int}")]
+        public IActionResult GetCourseById(int course_id) {
+            DisplayDetailClass displayDetailClass = null;
+            List<DisplayOtherCourse> displayOtherCourses = new List<DisplayOtherCourse>();
+
+            using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
+            {
+                conn.Open();
+                string queryGetSelectedClass = "SELECT * FROM course WHERE course.id=@idCourse";
+                string queryGetOtherClass = "SELECT * FROM course WHERE NOT course.id = @idCourse";
+
+                MySqlCommand cmdGetOtherCLass = new MySqlCommand(queryGetOtherClass, conn);
+                cmdGetOtherCLass.Parameters.AddWithValue("idCourse", course_id);
+
+                using(MySqlDataReader reader = cmdGetOtherCLass.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        displayOtherCourses.Add(new DisplayOtherCourse()
+                        {
+                            Title = reader.GetString("title"),
+                            Price = reader.GetInt32("price"),
+                            Image = reader.GetString("image"),
+                        });
+                    }
+                }
+
+                MySqlCommand cmdGetSelectedClass = new MySqlCommand(queryGetSelectedClass, conn);
+                cmdGetSelectedClass.Parameters.AddWithValue("idCourse", course_id);
+
+                using (MySqlDataReader reader = cmdGetSelectedClass.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        displayDetailClass = new DisplayDetailClass()
+                        {
+                            Title = reader.GetString("title"),
+                            Price = reader.GetInt32("price"),
+                            Image = reader.GetString("image"),
+                            Description = reader.GetString("description"),
+                            OtherCourse = displayOtherCourses,
+                        };
+                    }
+                }
+
+                conn.Close();
+            }
+
+            
+            if (displayDetailClass == null)
+            {
+                return Ok("Nothing happen");
+            
+            }
+            return Ok(displayDetailClass);
+
         }
 
         [HttpPost]
