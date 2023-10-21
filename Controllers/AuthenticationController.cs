@@ -1,5 +1,4 @@
-﻿using Google.Protobuf;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Soup_Backend.DTOs.Login;
@@ -24,7 +23,7 @@ namespace Soup_Backend.Controllers
             string query = "SELECT * FROM user WHERE email = @userEmail";
             try
             {
-                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnections")))
+                using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
                     conn.Open();
                     
@@ -47,8 +46,11 @@ namespace Soup_Backend.Controllers
                         {
                             if(loginRequest.Password == password)
                             {
-                                return Ok(true);
+
+                                return Ok("Login Berhasil");
                             }
+
+                            return Ok("Email dan Password Anda Salah");
                         }
                     }
 
@@ -64,7 +66,7 @@ namespace Soup_Backend.Controllers
         [HttpPost]
         [Route("/Regist")]
         public IActionResult Regist([FromBody] RegistRequest registRequest) {
-            string query = "INSERT INTO user VALUES (DEFAULT, @name, @email, @password";
+            string query = "INSERT INTO user VALUES (DEFAULT, @name, @email, @password)";
 
             try
             {
@@ -72,8 +74,8 @@ namespace Soup_Backend.Controllers
                 {
                     conn.Open();
 
-                    MySqlCommand cmd = new MySqlCommand();
-                    cmd.Parameters.AddWithValue("nama", registRequest.Name);
+                    MySqlCommand cmd = new MySqlCommand(query, conn);
+                    cmd.Parameters.AddWithValue("name", registRequest.Name);
                     cmd.Parameters.AddWithValue("email", registRequest.Email);
                     cmd.Parameters.AddWithValue("password", registRequest.Password);
 
