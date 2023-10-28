@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Soup_Backend.DTOs.Login;
 using Soup_Backend.DTOs.Regist;
+using Soup_Backend.Logic;
+using System.Configuration;
 
 namespace Soup_Backend.Controllers
 {
@@ -46,8 +48,9 @@ namespace Soup_Backend.Controllers
                         {
                             if(loginRequest.Password == password)
                             {
-
-                                return Ok("Login Berhasil");
+                                var token = new AuthenticationLogic(_configuration);
+                                
+                                return Ok(new LoginResponse {  Token = token.GenerateJWTBearer(email) });
                             }
 
                             return Ok("Email dan Password Anda Salah");
