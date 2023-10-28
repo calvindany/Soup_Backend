@@ -15,7 +15,7 @@ namespace Soup_Backend.Logic
         public AuthenticationLogic(IConfiguration configuration) {
             _configuration = configuration;
         }
-        public string GenerateJWTBearer(String user)
+        public string GenerateJWTBearer(int userId)
         {
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
                 _configuration.GetSection("JwtConfig:Key").Value)
@@ -23,7 +23,7 @@ namespace Soup_Backend.Logic
 
             var claims = new Claim[]
             {
-                new Claim(ClaimTypes.Name, user)
+                new Claim("user_id", userId.ToString())
             };
 
             var signingCredential = new SigningCredentials(key, SecurityAlgorithms.HmacSha256Signature);

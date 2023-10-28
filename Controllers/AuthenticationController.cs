@@ -8,8 +8,7 @@ using System.Configuration;
 
 namespace Soup_Backend.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
+    [Route("api/[Controller]")]
     public class AuthenticationController : ControllerBase
     {
         private IConfiguration _configuration;
@@ -19,7 +18,7 @@ namespace Soup_Backend.Controllers
         }
 
         [HttpPost]
-        [Route("/Login")]
+        [Route("Login")]
         public IActionResult Login([FromBody] LoginRequest loginRequest)
         {
             string query = "SELECT * FROM user WHERE email = @userEmail";
@@ -35,22 +34,24 @@ namespace Soup_Backend.Controllers
 
                     using (MySqlDataReader reader = cmd.ExecuteReader())
                     {
+                        int userId = -1;
                         string email = null;
                         string password = null;
 
                         if(reader.Read())
-                        {   
+                        {
+                            userId = reader.GetInt32("id");
                             email = reader.GetString("email");
                             password = reader.GetString("password");
                         }
 
-                        if(email != null && password != null)
+                        if(userId >= 0 && email != null && password != null)
                         {
                             if(loginRequest.Password == password)
                             {
                                 var token = new AuthenticationLogic(_configuration);
                                 
-                                return Ok(new LoginResponse {  Token = token.GenerateJWTBearer(email) });
+                                return Ok(new LoginResponse {  Token = token.GenerateJWTBearer(userId) });
                             }
 
                             return Ok("Email dan Password Anda Salah");
@@ -67,7 +68,7 @@ namespace Soup_Backend.Controllers
         }
 
         [HttpPost]
-        [Route("/Regist")]
+        [Route("Regist")]
         public IActionResult Regist([FromBody] RegistRequest registRequest) {
             string query = "INSERT INTO user VALUES (DEFAULT, @name, @email, @password)";
 

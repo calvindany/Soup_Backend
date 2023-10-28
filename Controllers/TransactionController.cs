@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
+using Soup_Backend.DTOs.Transaction;
 using Soup_Backend.Logic;
 using Soup_Backend.Models;
 using System.Data;
@@ -19,7 +20,7 @@ namespace Soup_Backend.Controllers
 
         [HttpPost]
         [Route("CheckoutCourse")]
-        public IActionResult PostCheckout([FromBody] Checkout checkout)
+        public IActionResult PostCheckout([FromBody] CheckoutDTO checkout)
         {
             try
             {
@@ -58,15 +59,15 @@ namespace Soup_Backend.Controllers
         {
             try
             {
-                List<DisplayCheckoutData> checkoutData = new List<DisplayCheckoutData>();
+                List<DisplayCheckoutDTO> checkoutData = new List<DisplayCheckoutDTO>();
                 using (MySqlConnection conn = new MySqlConnection(_configuration.GetConnectionString("DefaultConnection")))
                 {
-                    string query = @"SELECT Course.title as CourseTitle, Course.price as CoursePrice, 
+                    string query = @"SELECT Course.id as CourseID, Course.title as CourseTitle, Course.price as CoursePrice, 
                                     Course.image as CourseImage, Checkout.schedule as Schedule, 
                                     Category.category_name as CategoryName FROM Course 
                                     INNER JOIN Checkout ON Course.id = Checkout.fk_id_course
                                     INNER JOIN Category ON Category.id = Course.idcategory
-                                    WHERE Checkout.fk_id_user = @user_id";
+                                    WHERE Checkout.fk_id_user = @user_id AND Checkout.no_invoice = '0'";
 
                     conn.Open();
 
@@ -81,12 +82,14 @@ namespace Soup_Backend.Controllers
 
                     foreach (DataRow dr in dt.Rows)
                     {
-                        checkoutData.Add(new DisplayCheckoutData()
+                        checkoutData.Add(new DisplayCheckoutDTO()
                         {
+                            CourseId = dr["CourseID"].ToString(),
                             Category = dr["CategoryName"].ToString(),
                             Title = dr["CourseTitle"].ToString(),
                             Schedule = dr["Schedule"].ToString(),
                             Price = dr["CoursePrice"].ToString(),
+                            Image = dr["CourseImage"].ToString()
                         });
                     }
                 }
