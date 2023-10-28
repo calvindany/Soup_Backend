@@ -57,7 +57,7 @@ CREATE TABLE `checkout` (
   PRIMARY KEY (`id`),
   KEY `fk_course_idx` (`fk_id_course`) /*!80000 INVISIBLE */,
   CONSTRAINT `fk_course` FOREIGN KEY (`fk_id_course`) REFERENCES `course` (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -66,7 +66,7 @@ CREATE TABLE `checkout` (
 
 LOCK TABLES `checkout` WRITE;
 /*!40000 ALTER TABLE `checkout` DISABLE KEYS */;
-INSERT INTO `checkout` VALUES (1,1,2,'2038-01-19 03:14:07','SOUP1234'),(2,1,3,'2038-01-19 03:14:07','SOUP1234'),(3,1,1,'2038-01-19 03:14:07','SOUP1234'),(4,2,4,'2038-01-19 03:14:07','SOUP2345');
+INSERT INTO `checkout` VALUES (1,1,2,'2038-01-19 03:14:07','SOUP1234'),(2,1,3,'2038-01-19 03:14:07','SOUP1234'),(3,1,1,'2038-01-19 03:14:07','SOUP1234'),(4,2,4,'2038-01-19 03:14:07','SOUP2345'),(6,0,1,'2023-10-28 13:59:32','0'),(7,1,1,'2023-10-28 17:00:00','0'),(8,1,3,'2023-11-02 17:00:00','0');
 /*!40000 ALTER TABLE `checkout` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -137,7 +137,7 @@ CREATE TABLE `user` (
   `email` varchar(45) NOT NULL,
   `password` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -146,6 +146,7 @@ CREATE TABLE `user` (
 
 LOCK TABLES `user` WRITE;
 /*!40000 ALTER TABLE `user` DISABLE KEYS */;
+INSERT INTO `user` VALUES (1,'string','string','string');
 /*!40000 ALTER TABLE `user` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
@@ -158,4 +159,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-10-15  0:08:00
+-- Dump completed on 2023-10-29  0:51:12
