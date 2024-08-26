@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using MySql.Data.MySqlClient;
 using Soup_Backend.DTOs.Transaction;
 using Soup_Backend.Logic;
@@ -19,6 +20,7 @@ namespace Soup_Backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         [Route("CheckoutCourse")]
         public IActionResult PostCheckout([FromBody] CheckoutDTO checkout)
         {
